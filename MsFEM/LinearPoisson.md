@@ -24,7 +24,7 @@ L_{\epsilon}u =
 \end{cases}
 $$
 
-​	When we need to solve a heterogeneity problem by Finite Element Method on a fine scale, probability, we get a very large algebraic equations system. For example, if we assume the area that we need to solve is $[0, 1] \times [0, 1]$, and the mesh is $1024 \times 1024.$ In that case, we store it in a csr matrix form, the memory is 
+​	When we need to solve a heterogeneity problem by Finite Element Method on a fine scale, probability, we get a very large algebraic equations system. For example, if we assume the area that we need to solve is $[0, 1] \times [0, 1]$, and using $1024 \times 1024$ rectangle to divide that area. In that case, we store it in a csr matrix form, the memory is 
 
 $$
 2^3 \times 2^2 \times 2^2
@@ -36,6 +36,28 @@ $$
 ​	Although it's not too big for today's computers, but you should note that it's just a csr matrix and not too big a partition in engineering practice. If we want to compute it at the same time, or other complicated operations,  it will take a long time.
 
 ​	To reduce the matrix size, they put forward a generalized fem with a new name, multiscale finite element method. 
+
+# PDE model
+
+Follow the previous example, 
+
+$$
+\begin{cases}
+\begin{aligned}
+L_{\epsilon}u =
+-\nabla \cdot 
+\left(
+\kappa
+(\frac{\boldsymbol{x}}{\epsilon})
+\nabla u
+\right)
+&= f \quad in \quad \Omega \\
+\quad u &= g \quad on\ \ \partial\Omega
+\end{aligned}
+\end{cases}
+$$
+
+where $\Omega = [0, 1] \times [0, 1].$
 
 # Calculation
 
@@ -50,7 +72,7 @@ The computation step is
 
 	The computation step is same as the FEM, the only different thing is space.
 
-## 1. Variation
+## 1 Variation
 
 Like the linear FEM, given a subspace of $H^1(\Omega),$  named $V_H.$ Then
 
@@ -71,6 +93,7 @@ a(\frac{\boldsymbol{x}}{\epsilon})
 $$
 
 where $V_{H,0} = V_H \cap H_0^1.$  Using green formulation, 
+
 $$
 \int_{\Omega} 
 a(\frac{\boldsymbol{x}}{\epsilon}) 
@@ -83,9 +106,9 @@ $$
 
 ​	We will talk about the space $V_H,$ which composed by multiscale finite element basis, at subsection 4.
 
-## 2. Discretization
+## 2 Discretization
 
-For MsFEM, we need coarse mesh and fine mesh. Coarse mesh is used to approximate the numerical solution, while fine mesh used to construct the MsFEM basis. Let's give some notation to illustrate this method better.
+​	For MsFEM, we need coarse mesh and fine mesh. Coarse mesh is used to approximate the numerical solution, while fine mesh used to construct the MsFEM basis. Let's give some notation to illustrate this method better.
 | Notation |           Meaning            |
 | :----:   | :----------------------------- |
 |  NXC     | Number of segments in the x direction for coarse mesh|
@@ -98,45 +121,33 @@ For MsFEM, we need coarse mesh and fine mesh. Coarse mesh is used to approximate
 |  NCF     |       Number of elements in fine mesh       |
 |  NNF     |       Number of nodes in fine mesh       |
 | LDF 	   | Number of local basis functions of cell in fine mesh |
+| $\mathcal{T}_H$ | coarse mesh |
+| $K_H$ | element in coarse mesh|
+| $\mathcal{T}_h$ | fine mesh in a coarse element |
+| $K_h$ | element in fine mesh |
 
-对于多尺度有限元，需要两套网格，
-一个粗网格用来求解数值解，一个细网格用以逼近基函数。
-其中，网格用四边形、三角形、四面体、六面体剖分都是可行的，
-一个粗网格单元、细网格单元分别用 $K_H$, $K_h$ 表示 。
-下图是 FEALPy 中一个四边形单元的节点、单元、边的编号顺序。
+​	Note that the mesh is not restricted to rectangular elements, we can use triangle, tetrahedron, hexahedron either. We gave the local degree of freedom number, the edge of the serial number.
 
 <div align=center>
 <img src="../pics/fealpy_mesh_display.png" alt="参考单元网格节点编号" width="40%"/>
-</div>
-
-
-特别的，我们讨论在笛卡尔坐标下，单元两边平行于 x，y 轴的特殊情形。
-以下用四边形网格来做阐述。单元中各节点编号如图所示。
-
-<div align=center>
 <img src="../pics/RectangleMesh.png" alt="笛卡尔坐标下的单元网格" width="40%"/>
 </div>
 
+## 3 Space
 
-## 4 多尺度有限元基函数
+### 3.1 Multiscale finite element basis
 
-###  4.1 基函数特殊性 
-
-对比 FEM 的线性元，多尺度有限元的基函数自动的包含解的细尺度信息。
-下图从左到右分别为线性元基函数、
-线性边界条件的多尺度基函数、振荡边界条件的多尺度基函数。
+​	Maybe you are interested in how the MsFEM basis looks like, I give three pictures in the next. From left to right, is linear FEM basis, linear boundary MsFEM basis, oscillating boundary MsFEM basis.
 
 <center class="half">
-<img src="../pics/P1_FEM_basis.png" alt="笛卡尔坐标下的单元网格" width="30%"/>
-<img src="../pics/LinearBC_MsFEM_basis.png" alt="笛卡尔坐标下的单元网格" width="30%"/>
-<img src="../pics/OscillationBC_MsFEM_basis.png" alt="笛卡尔坐标下的单元网格" width="30%"/>
+<img src="../pics/P1_FEM_basis.png"  width="30%"/>
+<img src="../pics/LinearBC_MsFEM_basis.png"  width="30%"/>
+<img src="../pics/OscillationBC_MsFEM_basis.png"  width="30%"/>
 </center>
 
-### 4.2 子问题构造
+​	MsFEM can capture the local scale because of the basis, but unfortunately, the basis function doesn't have a explicit expression. So it's the key to construct the basis. 
 
-在粗网格单元 $K_H$ 上，我们通过微分算子 $L_{\epsilon}$ 构造基函数来抓住细尺度的信息。
-为了确保基函数的全局连续性，需给它设定一个边界条件 $\mu_i$，
-由此，我们可以得到原问题的子问题：
+​	The basis satisfies 
 
 $$
 \begin{cases}
@@ -145,6 +156,16 @@ L_{\epsilon} \phi_i = 0 ~\quad\ in\quad K_H\\
 \end{cases}
 \qquad i=0,1,2,3
 $$
+
+where $\mu_i$ is artificial boundary condition.
+
+### 4.2 子问题构造
+
+在粗网格单元 $K_H$ 上，我们通过微分算子 $L_{\epsilon}$ 构造基函数来抓住细尺度的信息。
+为了确保基函数的全局连续性，需给它设定一个边界条件 $\mu_i$，
+由此，我们可以得到原问题的子问题：
+
+
 
 $\mu_i$ 为粗网格节点 $x_i$ 处对应的多尺度基函数在 $\partial K_H$ 处的定义。
 值得指出的是，一个粗网格单元内子问题个数为 $K_H$ 节点个数

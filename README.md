@@ -1,14 +1,32 @@
 # Programming document for numerical methods
 
-
-
-​	In this project, I will talk about how to coding some numerical methods, but mainly talk about the MsFEMs.
-
-​	About the coding language, I mainly used Python. The mainly results and some notations is based on the Python library developed by Professor Wei Huayi of Xiangtan University.
+​	This project is a reading notes, about how to code for different numerical methods.
 
 # Numerical methods
-## FEM
 
-##  MsFEM
+​		Since there are many interesting algorithms, I decided to start with the few methods I know.
 
-## GMsFEM
+- Finite Difference Method, FDM
+
+- Finite Element Method, FEM
+
+- Multiscale Finite Element Method, MsFEM
+
+- Generalized Multiscale Finite Element Method, GMsFEM
+
+# Coding
+
+​	About the coding language, I wil use Python or C++ to the coding, but mainly use Python.
+
+## Python 
+
+​	Here are some fundamental package for scientific computing in Python.
+
+- Numpy
+- Scipy
+- Multiprocessing
+- Fealpy
+
+Maybe you will be unfamiliar to Fealpy, it's a finite element analysis library in Python, developed by Prof. Wei Huayi in Xiangtan University.
+
+## C++
