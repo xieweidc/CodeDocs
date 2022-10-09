@@ -85,8 +85,7 @@ a(\frac{\boldsymbol{x}}{\epsilon})
 \nabla u 
 \right) 
 \right) 
-\cdot v ~\mathrm{d} \boldsymbol{x} 
-= 
+\cdot v ~\mathrm{d} \boldsymbol{x} = 
 \int_{\Omega} f \cdot v 
 ~\mathrm{d} \boldsymbol{x}, 
 \quad \forall v \in V_{H,0},
@@ -98,8 +97,7 @@ $$
 \int_{\Omega} 
 a(\frac{\boldsymbol{x}}{\epsilon}) 
 \nabla u \cdot \nabla v
-~\mathrm{d} \boldsymbol{x} 
-= 
+~\mathrm{d} \boldsymbol{x} = 
 \int_{\Omega} f \cdot v
 ~\mathrm{d} \boldsymbol{x}
 $$
