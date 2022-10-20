@@ -1,5 +1,5 @@
 ---
-title:  MsFEM solve Linear Poisson
+title:  MsFEM solve Diffusion Equation
 ---
 
 # Introduction
