@@ -44,7 +44,7 @@ The computation step is
   The only different thing is still how to construct multiscale space.
 	
 ## 2 Discretization
-   
+
   For GMsFEM, we need coarse mesh and fine mesh. Coarse mesh is used to 
 approximate the numerical solution, while fine mesh used to construct 
 the MsFEM basis. Let's give some notation to illustrate this method better.
@@ -62,6 +62,7 @@ the MsFEM basis. Let's give some notation to illustrate this method better.
 |  NNF     |       Number of nodes in fine mesh       |
 | LDF 	   | Number of local basis functions of cell in fine mesh |
 | DNC | Number of coarse cell in the support of one multiscale basis |
+| DNN | Number of fine node in the support of one multiscale basis |
 | $\mathcal{T}_H$ | coarse mesh |
 | $K_H$ | element in coarse mesh|
 | $\mathcal{T}_h$ | fine mesh in a coarse element |
@@ -119,15 +120,31 @@ so abbreviate the subscript $K_{H,i}$ is a convient choice.
 
 **Choice 1**
 
-  Solve following 
+   We can consider the following system as snapshot basis:
+
+$$
+\begin{cases}
+\begin{aligned}
+- \mathrm{div}
+\left(
+ \kappa \nabla \psi_j^{(i)}
+\right)
+&= 0,  & \text{in} D_i, \\
+\psi_j^{(i)} &= \delta_j^h,
+& \text{on} \partial D_i
+\end{aligned}
+\end{cases}
+$$
 
 **Choice 2**
 
-  In this case, $P^{snap}$ is very simple.
+  In this case, $P^{snap}$ is very simple.  
 
 $$
 P^{snap} = I
 $$
+
+The dimension of the identity matirx is `(DNN, DNN)`
 
 #### 3.2.2 Offline Space
 
