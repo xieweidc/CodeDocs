@@ -1,5 +1,5 @@
 ---
-title:	GMsFEM solve Diffusion Equation
+title:	Generalized Multiscale Finite Element Method to Solve Diffusion Equation
 ---
 
 # Introduction
@@ -8,7 +8,7 @@ title:	GMsFEM solve Diffusion Equation
 generalized multiscale finite element method(GMsFEM) 
 can have more than one basis in each coarse node. 
 
-# PDE model
+# PDE Model
 
   In this document, like the MsFEM, we still use a 2D problem to 
 illustrate the basic ideas of the method. 
@@ -100,23 +100,34 @@ online basis function $\psi^{on}$ if needed.
 ### 3.1 Partition Unity
 
   We can take the original MsFEM as partition unity, the computation of 
-MsFEM basis already examplified in this folder. Using $\chi$ as the partition unity notation, to different with the multiscale basis.
+MsFEM basis already examplified in this folder. Using $\chi$ as the partition unity notation, 
+to different with the multiscale basis.
 
 ### 3.2 Offline computation
 
+Before we get started, we have to point out that offline computation is 
+focus on the $D_i$, where the subscript $i$ means the $ith$ coarse node,
+i.e. $ith$ multiscale basis support. So we discuss in a support.
+
 #### 3.2.1 Snapshot Space
 
-  First, we using the same grid to compute the snapshot space,
+  First, we using the same grid to compute the snapshot space $V^{snap}$,
 when compute the partition unity. 
 There are two options to construct the snapshot space. 
 The first choice is to solve a set of local problems with 
 boundary conditions in each coarse neighborhood.
 The second choice is to use fine-grid nodal bases 
-in each coarse region $K_H$.
+in each coarse region $D_i$.
 
-  In here, we use $P_{K_{H,i}}^{snap}$ to denote the multiscale basis value 
-in each fine node. We talk the multiscale basis for one cell,
-so abbreviate the subscript $K_{H,i}$ is a convient choice.
+  Assume the basis in the snapshot space, 
+
+$$
+\psi_{j}^{D_i}
+$$
+
+  In here, we use $P_{K_{H,i}}^{snap}$ to denote the $ith$ coarse cell's multiscale basis value 
+in each fine node. We talk the multiscale basis for one support,
+so abbreviate the subscript $K_{H,i}$ is a convenient choice.
 
 **Choice 1**
 
@@ -136,6 +147,22 @@ $$
 \end{cases}
 $$
 
+  where $\psi_j^{(i)}$ means the $jth$ snapshot basis in the $ith$ support.
+By solving the above system, we can get the $\psi_j^{(i)}$ basis value in each fine node.
+You can set the number of snapshot basis, called $l_0=\dim(V^{snap}).$
+And uniformly, use $P^{snap}$ denote the snapshot basis value in the every fine node.
+
+  Then, we can get 
+
+$$
+P^{snap} = 
+\begin{bmatrix}
+\psi_0 \\ \psi_1 \\ \vdots \\ \psi_{l_0-1}
+\end{bmatrix}
+$$
+
+The shape of the $P^{snap}$ is `(l_0, DNN)`.
+
 **Choice 2**
 
   In this case, $P^{snap}$ is very simple.  
@@ -144,9 +171,22 @@ $$
 P^{snap} = I
 $$
 
-The dimension of the identity matirx is `(DNN, DNN)`
+The shape of the identity matirx is `(DNN, DNN)`.
 
 #### 3.2.2 Offline Space
 
-  Then, we need a spectrum decomposition to reduce the dimension
-of snapshot space.
+  Then, we need a spectral decomposition to reduce the dimension
+of snapshot space. For example:
+$$
+\int_{D_i} \kappa \nabla \phi_j^{(i)} \cdot \nabla v = 
+\lambda_j^{(i)} \int_{D_i} \hat{\kappa} \phi_j^{(i)} v,
+\quad \forall v \in V_{snap}^{(i)}, \quad j=1,\cdots,l_0
+$$
+
+  where $\hat{\kappa} \coloneqq \kappa \sum_{i=1}^{N_{in}} H^2 |\nabla \chi_i|^2$ 
+and $\{\chi_i\}_{i=1}^{N_{in}}$ is a set of partition of unity that already solved before.
+
+  The space $V_{D_i}^{off}$ is constructed by selecting $l_1$ eigenvectors 
+corresponding to smallest eigenvalues. By solving the spectral problem, 
+the basis $\psi^{off}$ can be a linear combination of $\psi^{snap}$. 
+We can get 
