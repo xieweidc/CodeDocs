@@ -23,6 +23,10 @@ Construct CEM-GMsFEM space are mainly in two steps:
 
 # Simulation
 
+**To be consistent with the notation of other documents,** 
+**we still using $\phi$ to denote the multiscale basis,** 
+**rather than $\psi$ in the CEM-GMsFEM paper.**
+
 ### Auxiliary multiscale space
 
 Using $K_i$ denote $ith$ coarse cell,
@@ -92,32 +96,51 @@ $P^i$ 为辅助空间的离散形式。
 
 # Appendix
 
+Defined $V=H_0^1.$
+
+## Orthogonal of two Spaces
+
+The operator $\pi_i$ is given by
+
+$$
+\pi_i(u) = \sum_{j=1}^{l_i} 
+\frac{s_i(u,\psi_j^{(i)})}{s_i(\psi_j^{(i)},\psi_j^{(i)})}
+\psi_j^{(i)}, \quad \forall u \in V.
+$$
+
+The null space of the projection $\pi$, namely, $\tilde{V}=\{v\in V| \pi(v)=0\}$
+
+Then for any $\phi_j^{(i)}\in V_{glo}$, we have 
+
+$$
+a(\phi_j^{(i)}, v)=0, \quad \forall v\in \tilde{V}.
+$$
+
 ## Rewrite of Minimizing problem
 
 $$
-\mathcal{L}(\psi, \lambda) = 
-a(\psi, \psi)+2s(\psi-\phi_k^{(i)}, \lambda),
+\mathcal{L}(\phi, \lambda) = 
+a(\phi, \phi)+2s(\phi-\psi_k^{(i)}, \lambda),
 $$
 
 原问题就转化为找一 
-$(\psi, \lambda) \in V_0(K_{i,m}) \times V_{aux}(K_{i,m}),$ 使得
-$\mathcal{L}(\psi, \lambda)$ 函数值最小，
-那么 $\mathcal{L}(\psi, \lambda)$ 分别对 $\psi, \lambda$ 求导。
-
+$(\phi, \lambda) \in V_0(K_{i,m}) \times V_{aux}(K_{i,m}),$ 使得
+$\mathcal{L}(\phi, \lambda)$ 函数值最小，
+那么 $\mathcal{L}(\phi, \lambda)$ 分别对 $\phi, \lambda$ 求导。
 $$
 \begin{aligned}
-\mathcal{L}_{\psi}(\psi, \lambda) &= 
-\lim_{t\to 0} \frac{a(\psi+tp,\psi+tp)+
-2s(\psi+tp-\phi_k^{(i)},\lambda)-a(\psi,\psi)-
-2s(\psi-\phi_k^{(i)},\lambda)}{t} \\
-&= 2a(\psi,p) + 2(p,\lambda) \\
-\mathcal{L}_{\lambda}(\psi,\lambda) &= 
+\mathcal{L}_{\phi}(\phi, \lambda) &= 
+\lim_{t\to 0} \frac{a(\phi+tp,\phi+tp)+
+2s(\phi+tp-\psi_k^{(i)},\lambda)-a(\phi,\phi)-
+2s(\phi-\psi_k^{(i)},\lambda)}{t} \\
+&= 2a(\phi,p) + 2(p,\lambda) \\
+\mathcal{L}_{\lambda}(\phi,\lambda) &= 
 \lim_{t\to 0}
-\frac{a(\psi,\psi)+
-2s(\psi-\phi_k^{(i)},\lambda+tq)
--a(\psi,\psi)-
-2s(\psi-\phi_k^{(i)},\lambda)}{t} \\
-&= 2s(\psi-\phi_k^{(i)}, q)
+\frac{a(\phi,\phi)+
+2s(\phi-\psi_k^{(i)},\lambda+tq)
+-a(\phi,\phi)-
+2s(\phi-\psi_k^{(i)},\lambda)}{t} \\
+&= 2s(\phi-\psi_k^{(i)}, q)
 \end{aligned}
 $$
 
@@ -126,9 +149,9 @@ $$
 $$
 \begin{cases}
 \begin{aligned}
-a(\psi_{j,ms}^i, p) + s(p,\lambda) &= 0,
+a(\phi_{j,ms}^i, p) + s(p,\lambda) &= 0,
 &\forall p\in V_0(K_{i,m}), \\
-s(\psi_{j,ms}^i-\phi_j^i, q) &= 0,
+s(\phi_{j,ms}^i-\psi_j^i, q) &= 0,
 &\forall q\in V_{aux}(K_{i,m}),
 \end{aligned}
 \end{cases}
