@@ -23,9 +23,22 @@ Construct CEM-GMsFEM space are mainly in two steps:
 
 # Simulation
 
+| Notation |           Meaning            |
+| :----:   | :----------------------------- |
+|  NXC     | Number of segments in the x direction for coarse mesh|
+|  NYC     | Number of segments in the y direction for coarse mesh|
+|  NXF     |  Number of segments in the x direction for fine mesh |
+|  NYF     |  Number of segments in the y direction for fine mesh |
+|  DNN     | Number of fine node in $D_i$ |
+|  DNA     | Number of auxiliary multiscale basis in $D_i$ |
+
+## Multiscale space
+
 **To be consistent with the notation of other documents,** 
 **we still using $\phi$ to denote the multiscale basis,** 
 **rather than $\psi$ in the CEM-GMsFEM paper.**
+Besides, $\varphi$ is stand for the basis in fine grid.
+
 
 ### Auxiliary multiscale space
 
@@ -65,17 +78,26 @@ $$
 \phi ~\text{is}~ \psi_j^i-\text{orthogonal} \}
 $$
 
-By using Lagrange Multiplier, we can get 
+Using Lagrange multiplied, it comes to
 
 $$
-(\phi_{j,ms}, \lambda) =  \mathrm{argmin}
-\{a(\phi,\phi) + 2s(\phi-\psi_j^{(i)}, \lambda) 
-| \psi \in V_0(K_{i,m}),
-\phi ~\text{is}~ \psi_j^i-\text{orthogonal}, 
-\lambda \in V_{aux} \}
+\begin{cases}
+\begin{aligned}
+a(\phi_{j,ms}^i, p) + s(p,\lambda) &= 0,
+&\forall p\in V_0(K_{i,m}), \\
+s(\phi_{j,ms}^i-\psi_j^i, q) &= 0,
+&\forall q\in V_{aux}(K_{i,m}).
+\end{aligned}
+\end{cases}
 $$
 
-
+Considering $\phi_{j,ms}$ can be a linear combination of $\varphi$ in 
+$D_i$, while $\lambda$ is the linear combination of $\psi_j^i$. 
+Denote $M_h$ be the matrix such that $M_{h,ij}=s(q_j,q_i)$, 
+$A_h$ is the stiffmatrix, i.e. $A_{h,ij}=a_(q_j,q_i)$. 
+$A_h^i$ and $M_h^i$ be the restriction of $A_h$ and $M_h$ on $K_{i,m}$ 
+respectively. $P^i$ is the matrix that includes all the discrete 
+auxiliary basis in space $V_{aux}(K_{i,m})$.
 The matrix form as follows:
 
 $$
@@ -84,49 +106,69 @@ A_h^i & M_h^i P^i \\
 (M_h^i P^i)^T & 0
 \end{bmatrix}
 \begin{bmatrix}
-\psi_h^i \\ \lambda_h^i
+\phi_h^i \\ \lambda_h^i
 \end{bmatrix} = 
 \begin{bmatrix}
- 0 \\ I_i
+ 0 \\ I
 \end{bmatrix}
 $$
 
-其中 $A_h^i, M_h^i$ 为细网格线性基函数在 $K_{i,m}$ 上的刚度，质量矩阵。
-$P^i$ 为辅助空间的离散形式。
+where $I$ is a unit matrix, which dimension is (DNN, DNN). 
+In this case, we have to point out that the order of 
+$\psi_{j,h}^i$ is consistent with 
+the order of $\phi_{j,ms}^i$.
+
+In addition, using the previously mentioned marks, let's talk about 
+the dimension of the above matrix.
+
+$$
+\begin{aligned}
+A_h^i &: \text{(DNN, DNN)} \\
+M_h^i &: \text{(DNN, DNN)} \\
+P^i &: \text{(DNN, DNA)} \\
+\phi_h^i &: \text{(DNN, DNA)} \\
+\lambda_h^i &: \text{(DNA, DNA)}
+\end{aligned}
+$$
 
 # Appendix
 
 Defined $V=H_0^1.$
 
-## Orthogonal of two Spaces
-
-The operator $\pi_i$ is given by
-
-$$
-\pi_i(u) = \sum_{j=1}^{l_i} 
-\frac{s_i(u,\psi_j^{(i)})}{s_i(\psi_j^{(i)},\psi_j^{(i)})}
-\psi_j^{(i)}, \quad \forall u \in V.
-$$
-
-The null space of the projection $\pi$, namely, $\tilde{V}=\{v\in V| \pi(v)=0\}$
-
-Then for any $\phi_j^{(i)}\in V_{glo}$, we have 
-
-$$
-a(\phi_j^{(i)}, v)=0, \quad \forall v\in \tilde{V}.
-$$
-
 ## Rewrite of Minimizing problem
+
+The original form as follows:
+
+$$
+\phi_{j,ms} =  \mathrm{argmin}
+\{a(\phi,\phi) | \psi \in V_0(K_{i,m}),
+\phi ~\text{is}~ \psi_j^i\text{-orthogonal} \}
+$$
+
+By using Lagrange Multiplier, we can get 
+
+$$
+(\phi_{j,ms}, \lambda) =  \mathrm{argmin}
+\{a(\phi,\phi) + 2s(\phi-\psi_j^{(i)}, \lambda) 
+| \psi \in V_0(K_{i,m}),
+\phi ~\text{is}~ \psi_j^i\text{-orthogonal}, 
+\lambda \in V_{aux} \}
+$$
+
+Define
 
 $$
 \mathcal{L}(\phi, \lambda) = 
 a(\phi, \phi)+2s(\phi-\psi_k^{(i)}, \lambda),
 $$
 
-原问题就转化为找一 
-$(\phi, \lambda) \in V_0(K_{i,m}) \times V_{aux}(K_{i,m}),$ 使得
-$\mathcal{L}(\phi, \lambda)$ 函数值最小，
-那么 $\mathcal{L}(\phi, \lambda)$ 分别对 $\phi, \lambda$ 求导。
+Then the original problem has transferd to, looking for a 
+$(\phi, \lambda) \in V_0(K_{i,m}) \times V_{aux}(K_{i,m})$, 
+such that $\mathcal{L}(\phi, \lambda)$ is minimizing.
+
+The partial of $\mathcal{L}(\phi, \lambda)$ with respect 
+to $\phi, \lambda$.
+
 $$
 \begin{aligned}
 \mathcal{L}_{\phi}(\phi, \lambda) &= 
@@ -144,7 +186,7 @@ $$
 \end{aligned}
 $$
 
-这样问题就变成了
+Then it comes to
 
 $$
 \begin{cases}
@@ -152,7 +194,36 @@ $$
 a(\phi_{j,ms}^i, p) + s(p,\lambda) &= 0,
 &\forall p\in V_0(K_{i,m}), \\
 s(\phi_{j,ms}^i-\psi_j^i, q) &= 0,
-&\forall q\in V_{aux}(K_{i,m}),
+&\forall q\in V_{aux}(K_{i,m}).
 \end{aligned}
 \end{cases}
 $$
+
+## Orthogonal of two Spaces
+
+In the following, we will discuss why did the two space 
+$V_{glo}$ and $\tilde{V}$ are orthogonal.
+The operator $\pi_i$ is given by
+
+$$
+\pi_i(u) = \sum_{j=1}^{l_i} 
+\frac{s_i(u,\psi_j^{(i)})}{s_i(\psi_j^{(i)},\psi_j^{(i)})}
+\psi_j^{(i)}, \quad \forall u \in V.
+$$
+
+The null space of the projection $\pi$, namely, $\tilde{V}=\{v\in V| \pi(v)=0\}$. 
+Then for any $\phi_j^{(i)}\in V_{glo}$, we have 
+
+$$
+a(\phi_j^{(i)}, v)=0, \quad \forall v\in \tilde{V}.
+\tag{1.1}
+$$
+
+As discussed before, 
+
+$$
+a(\phi_j^{(i)}, v) = -s(v, \lambda)
+$$
+
+where $\lambda \in V_{aux}$, while $v \in \tilde{V}$, so 
+we can conclude that (1.1).

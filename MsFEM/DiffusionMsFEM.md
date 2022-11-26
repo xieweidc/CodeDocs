@@ -107,18 +107,19 @@ $$
 ## 2 Discretization
 
 ​	For MsFEM, we need coarse mesh and fine mesh. Coarse mesh is used to approximate the numerical solution, while fine mesh used to construct the MsFEM basis. Let's give some notation to illustrate this method better.
+
 | Notation |           Meaning            |
 | :----:   | :----------------------------- |
 |  NXC     | Number of segments in the x direction for coarse mesh|
 |  NYC     | Number of segments in the y direction for coarse mesh|
 |  NCC     |       Number of elements in coarse mesh       |
 |  NNC     |       Number of nodes in coarse mesh       |
-| LDC      | Number of local basis functions of cell in coarse mesh |
+|  LDC     | Number of local basis functions of cell in coarse mesh |
 |  NXF     |  Number of segments in the x direction for fine mesh |
 |  NYF     |  Number of segments in the y direction for fine mesh |
 |  NCF     |       Number of elements in fine mesh       |
 |  NNF     |       Number of nodes in fine mesh       |
-| LDF 	   | Number of local basis functions of cell in fine mesh |
+|  LDF     | Number of local basis functions of cell in fine mesh |
 | $\mathcal{T}_H$ | coarse mesh |
 | $K_H$ | element in coarse mesh|
 | $\mathcal{T}_h$ | fine mesh in a coarse element |
