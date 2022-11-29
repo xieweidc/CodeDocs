@@ -2,6 +2,41 @@
 title: Newton-Cotes Quadrature formula
 ---
 
+# Introduction
+
+The Newton-Leibniz formulation can used to compute definite integral.
+
+$$
+I = \int_a^b f(x) \mathrm{d}x = F(b) - F(a)
+$$
+
+where $F$ is the primitive function of $f$.
+
+But for practice, the above is hard to achive, because of 
+we can't express the $F$ explicit.
+For this case, using another quadrature method instead, 
+numerical integration.
+
+- Trapezoid formula, 
+
+$$
+I \approx \frac{b-a}{2} (f(a) + f(b)).
+$$
+
+- Mid-rectangle formula,
+
+$$
+I \approx (b-a) f(\frac{b-a}{2}).
+$$
+
+- Simpson formula
+
+$$
+I \approx \frac{b-a}{6} (f(a) + 4f(\frac){b-a}{2}+f(b)).
+$$
+
+# Appendix
+
 ​	Divide the interval $[a, b]$ into $n$ part.
 
 $$
@@ -25,65 +60,6 @@ $$
 
 ​	Obviously,  $c_k^{(n)}$ is not related to integral interval.
 
-<table>
-	<tr align="center">
-		<td> NX = NY </td>
-		<td colspan="2"> P8 元 </td>
-        <td colspan="2"> 线性边界多尺度有限元 </td>
-		<td colspan="2"> 振荡边界多尺度有限元 </td>
-	</tr>
-        <tr align='center'>
-        <td> 2 </td>
-        <td> 178.23570728 </td>
-        <td> </td>
-        <td> 3.40821887e+01 </td>
-        <td> </td>
-        <td> 3.18629635e+01  </td>
-        <td> </td>
-    </tr>
-    <tr align='center'>
-        <td> 4 </td>
-        <td> 76.15654157 </td>
-        <td>  1.23  </td>
-        <td> 5.65486603e-01 </td>
-        <td> 5.91 </td>
-        <td> 6.35698253e-01 </td>
-        <td> 5.65  </td>
-    </tr>
-    <tr align='center'>
-        <td> 8 </td>
-        <td>  35.76403924 </td>
-        <td> 1.09 </td>
-        <td> 5.36255946e-01  </td>
-        <td>  0.08   </td>
-        <td> 5.41033265e-01 </td>
-        <td> 0.23  </td>
-    </tr>
-    <tr align='center'>
-        <td> 16 </td>
-        <td> 61.42495307 </td>
-        <td> -0.78  </td>
-        <td> 3.05249901e-01 </td>
-        <td> 0.81 </td>
-        <td>  3.06064551e-01 </td>
-        <td> 0.82 </td>
-    </tr>
-    <tr align='center'>
-        <td> 32 </td>
-        <td>  3.54661894</td>
-        <td> 4.11 </td>
-        <td> 8.22935495e-02  </td>
-        <td> 1.89  </td>
-        <td> 7.86093119e-02 </td>
-        <td> 1.96  </td>
-    </tr>
-    <tr align='center'>
-        <td> 64 </td>
-        <td> 0.90121616 </td>
-        <td> 1.98 </td>
-        <td> 3.07820424e-02 </td>
-        <td> 1.42 </td>
-        <td> 2.97493282e-02 </td>
-        <td> 1.40 </td>
-    </tr>
-</table>
+<center class="half">
+<img src="../pics/NewtonCotesCoefficient.png"  width="80%"/>
+</center>
