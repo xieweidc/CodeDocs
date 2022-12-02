@@ -405,3 +405,9 @@ $$
 
 ## 7 Numerical results
 
+### How to compute error
+
+In the reference cases, we need to compare the result of 
+FEM and MsFEM. 
+
+# Appendix
