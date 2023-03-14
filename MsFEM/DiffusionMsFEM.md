@@ -2,11 +2,14 @@
 title:  MsFEM solve Diffusion Equation
 ---
 
+
+> A Multiscale Finite Element Method for Elliptic Problems in Composite Materials 
+> and Porous Media, Journal of  Vol 134, 169-189.
+
+
 # Introduction
-
-​	Multiscale finite element method(MsFEM) is proposed by Hou and Wu in 1997. The original parper could be found in, A Multiscale Finite Element Method for Elliptic Problems in Composite Materials and Porous Media, Vol 134, 169-189.
-
-​	In this document, we will use a 2D problem to illustrate the basic ideas of the method. 1D and 3D also be concerned. The 2D problem is:
+​	In this document, we will use a 2D problem to illustrate the basic ideas of
+ the method. 1D and 3D also be concerned. The 2D problem is:
 
 $$
 \begin{cases}
@@ -24,7 +27,11 @@ L_{\epsilon}u =
 \end{cases}
 $$
 
-​	When we need to solve a heterogeneity problem by Finite Element Method on a fine scale, probability, we get a very large algebraic equations system. For example, if we assume the area that we need to solve is $[0, 1] \times [0, 1]$, and using $1024 \times 1024$ rectangle to divide that area. In that case, we store it in a csr matrix form, the memory is 
+​	When we need to solve a heterogeneity problem by Finite Element Method on a fine 
+scale, probability, we get a very large algebraic equations system. For example, 
+if we assume the area that we need to solve is $[0, 1] \times [0, 1]$, and using 
+$1024 \times 1024$ rectangle to divide that area. In that case, we store it in a 
+csr matrix form, the memory is 
 
 $$
 2^3 \times 2^2 \times 2^2
@@ -33,9 +40,13 @@ $$
 = 2^7 MB.
 $$
 
-​	Although it's not too big for today's computers, but you should note that it's just a csr matrix and not too big a partition in engineering practice. If we want to compute it at the same time, or other complicated operations,  it will take a long time.
+​	Although it's not too big for today's computers, but you should note that it's 
+just a csr matrix and not too big a partition in engineering practice. If we want to
+ compute it at the same time, or other complicated operations,  
+ it will take a long time.
 
-​	To reduce the matrix size, they put forward a generalized fem with a new name, multiscale finite element method. 
+​	To reduce the matrix size, they put forward a generalized fem with a new name, 
+multiscale finite element method. 
 
 # PDE model
 
@@ -81,7 +92,7 @@ $$
 \left(
 \nabla \cdot 
 \left(
-a(\frac{\boldsymbol{x}}{\epsilon})
+\kappa(\frac{\boldsymbol{x}}{\epsilon})
 \nabla u 
 \right) 
 \right) 
@@ -95,7 +106,7 @@ where $V_{H,0} = V_H \cap H_0^1.$  Using green formulation,
 
 $$
 \int_{\Omega} 
-a(\frac{\boldsymbol{x}}{\epsilon}) 
+\kappa(\frac{\boldsymbol{x}}{\epsilon}) 
 \nabla u \cdot \nabla v
 ~\mathrm{d} \boldsymbol{x} = 
 \int_{\Omega} f \cdot v
@@ -106,7 +117,16 @@ $$
 
 ## 2 Discretization
 
-​	For MsFEM, we need coarse mesh and fine mesh. Coarse mesh is used to approximate the numerical solution, while fine mesh used to construct the MsFEM basis. Let's give some notation to illustrate this method better.
+​	For MsFEM, we need coarse mesh and fine mesh. 
+Coarse mesh is used to approximate the numerical solution,
+ while fine mesh used to construct the MsFEM basis. 
+
+<div align=center>
+<img src="../pics/DoubleMesh.png" alt="多尺度网格" width="70%"/>
+</div>
+
+$K$ is a coarse cell, $D_i$ is the support of multiscale basis function. 
+ Let's give some notation to illustrate this method better.
 
 | Notation |           Meaning            |
 | :----:   | :----------------------------- |
@@ -125,18 +145,23 @@ $$
 | $\mathcal{T}_h$ | fine mesh in a coarse element |
 | $K_h$ | element in fine mesh |
 
-​	Note that the mesh is not restricted to rectangular elements, we can use triangle, tetrahedron, hexahedron either. We gave the local degree of freedom number, the edge of the serial number.
+​	Note that the mesh is not restricted to rectangular elements, 
+we can use triangle, tetrahedron, hexahedron either. 
+We gave the local degree of freedom number, the edge of the serial number.
 
 <div align=center>
-<img src="../pics/fealpy_mesh_display.png" alt="参考单元网格节点编号" width="40%"/>
-<img src="../pics/RectangleMesh.png" alt="笛卡尔坐标下的单元网格" width="40%"/>
+<img src="../pics/fealpy_mesh_display.png" width="40%"/>
+<img src="../pics/RectangleMesh.png" width="40%"/>
 </div>
 
 ## 3 Space
 
 ### 3.1 Multiscale finite element basis
 
-​	Maybe you are interested in how the MsFEM basis looks like, I give three pictures in the next. From left to right, is linear FEM basis, linear boundary MsFEM basis, oscillating boundary MsFEM basis.
+​	Maybe you are interested in how the MsFEM basis looks like, 
+I give three pictures in the next. From left to right, 
+is linear FEM basis, linear boundary MsFEM basis, 
+oscillating boundary MsFEM basis.
 
 <center class="half">
 <img src="../pics/P1_FEM_basis.png"  width="30%"/>
@@ -144,9 +169,18 @@ $$
 <img src="../pics/OscillationBC_MsFEM_basis.png"  width="30%"/>
 </center>
 
-​	MsFEM can capture the local scale because of the basis, but unfortunately, the basis function doesn't have a explicit expression. So it's the key to construct the basis. 
 
-​	The basis satisfies 
+<center class="half">
+<img src="../pics/P1_FEM_basis_D.png"  width="30%"/>
+<img src="../pics/LinearBC_MsFEM_basis_D.png"  width="30%"/>
+<img src="../pics/OscillationBC_MsFEM_basis_D.png"  width="30%"/>
+</center>
+
+​	MsFEM can capture the local scale because of the basis, but unfortunately, 
+the basis function doesn't have a explicit expression. 
+So it's the key to construct the basis. 
+
+​	The basis functions satisfied
 
 $$
 \begin{cases}
@@ -156,11 +190,17 @@ L_{\epsilon} \phi_i = 0 ~\quad\ in\quad K_H\\
 \qquad i=0,1,2,3
 $$
 
-where $\mu_i$ is an artificial boundary condition, it will be discussed in the next subsection. Because the mesh that we used is rectangle, so it has 4 subproblems in each coarse element $K_H.$ If you choose triangle, tetrahedron and hexahdron, you will need to solve 3, 4, 6 subproblems in each coarse element $K_H.$
+where $\mu_i$ is an artificial boundary condition, it will be discussed 
+in the next subsection. Because the mesh that we used is rectangle, 
+so it has 4 subproblems in each coarse element $K_H.$ If you choose triangle,
+ tetrahedron and hexahdron, you will need to solve 3, 4, 6 subproblems 
+ in each coarse element $K_H.$
 
 ### 3.2 Basis boundary condition
 
-​	As mentioned before, we difine an artificial boundary condition for multiscale basis to ensure the basis is continuous in their support. In this subsection, two type of the boundary is proposed.
+​	As mentioned before, we define an artificial boundary condition for 
+multiscale basis to ensure the basis is continuous in their support. 
+In this subsection, two type of the boundary is proposed.
 
 - linear boundary condition
 - oscillatory boundary condition
@@ -189,7 +229,8 @@ $$
 
 #### 3.2.2 Oscillatory boundary condition
 
-​	The other choice is deleting terms with partial derivatives in the direction normal to $\partial K,$ 
+​	The other choice is deleting terms with partial derivatives in the 
+direction normal to $\partial K,$ 
 
 $$
 \begin{aligned}
@@ -211,7 +252,8 @@ $$
 \end{aligned}
 $$
 
-then combine  $\phi_i(\boldsymbol{x}_j) = \delta_{ij},$ you can also get explicit expression in this case.
+then combine  $\phi_i(\boldsymbol{x}_j) = \delta_{ij},$ 
+you can also get explicit expression in this case.
 
 $$
 \begin{cases}
@@ -250,9 +292,12 @@ $$
 
 ### 3.3 Numerical method for basis
 
-​	The subproblem can't be solved analytically for any possible $\kappa.$ So we use FEM to get the numerical solution of the multiscale  basis, using linear FEM generally. 
+​	The subproblem can't be solved analytically for any possible $\kappa.$ 
+So we use FEM to get the numerical solution of the multiscale  basis, 
+using linear FEM generally. 
 
-​	Like the usual FEM method, it becames at variation. Defined $V_h$ is a trial function space in $K_H,$ 
+​	Like the usual FEM method, it becames at variation. 
+Defined $V_h$ is a trial function space in $K_H,$ 
 
 $$
 -\int_{K_H}
@@ -287,7 +332,11 @@ $$
 \phi_j = q_{ij} \varphi_i, \qquad \forall j = 0, 1, 2, 3
 $$
 
-where $Q = (q_{ij})$ is matrix and $\varphi_j \in V_h$ is fine-scale finite  element basis functions. The jth column of this matrix contains the fine-scale representation of the ith multiscale basis function. In $K_H,$ using $\boldsymbol{\Phi}_H, \boldsymbol{\varPhi}_h$ stand for the multiscale basis, linear basis in one coarse cell $K_H.$
+where $Q = (q_{ij})$ is matrix and $\varphi_j \in V_h$ is fine-scale finite element 
+basis functions. The jth column of this matrix contains the fine-scale representation
+ of the ith multiscale basis function. 
+ In $K_H,$ using $\boldsymbol{\Phi}_H, \boldsymbol{\varPhi}_h$ stand for 
+ the multiscale basis, linear basis in one coarse cell $K_H.$
 
 $$
 \begin{aligned}
@@ -309,11 +358,14 @@ $$
 \boldsymbol{\Phi}_H = \boldsymbol{\varPhi}_h Q
 $$
 
-​	The multiscale basis is solved cell by cell. Obviously, we need to solve 4 subproblems to get the multiscale basis, generally, $LDC$ subproblems in each coarse element.
+​	The multiscale basis is solved cell by cell. 
+Obviously, we need to solve four subproblems to get the multiscale basis, 
+generally, $LDC$ subproblems in each coarse element.
 
 ## 4 Assemble
 
-​	Actually, assemble of multiscale finite element is the same as the FEM, so we just discuss matrix or vector in one coarse element $K_H.$
+​	Actually, assemble of multiscale finite element is the same as the FEM, 
+so we just discuss matrix or vector in one coarse element $K_H.$
 
 ## 4.1 element stiff matrix
 
@@ -345,7 +397,8 @@ A_K &= \int_{K_H} \kappa \cdot
 \end{aligned}
 $$
 
-​	In this special case, we can compute every element stiff matrix after the multiscale basis constructed. So it can avoid  to compute $A_h$ again.
+​	In this special case, we can compute every element stiff matrix after the
+ multiscale basis constructed. So it can avoid  to compute $A_h$ again.
 
 ## 4.2 element source vector
 
@@ -379,7 +432,8 @@ M_h = \int_{K_H} c \cdot
 ~\mathrm{d}\boldsymbol{x}
 $$
 
-here $c$ is $c(\boldsymbol{x}).$ The same as before, $M_K$ is coarse element mass matrix
+here $c$ is $c(\boldsymbol{x}).$ The same as before, 
+$M_K$ is coarse element mass matrix.
 
 $$
 \begin{aligned}

@@ -13,7 +13,6 @@ can have more than one basis in each coarse node.
   In this document, like the MsFEM, we still use a 2D problem to 
 illustrate the basic ideas of the method. 
 1D and 3D also be concerned. The 2D problem is:
-
 $$
 \begin{cases}
 \begin{aligned}
@@ -21,7 +20,7 @@ L_{\epsilon}u =
 -\nabla \cdot 
 \left(
 \kappa
-(\frac{\boldsymbol{x}}{\epsilon})
+(\boldsymbol{x},\omega)
 \nabla u
 \right)
 &= f \quad in \quad \Omega \\
@@ -47,7 +46,14 @@ The computation step is
 
   For GMsFEM, we need coarse mesh and fine mesh. Coarse mesh is used to 
 approximate the numerical solution, while fine mesh used to construct 
-the MsFEM basis. Let's give some notation to illustrate this method better.
+the MsFEM basis. 
+
+<div align=center>
+<img src="../pics/DoubleMesh.png" alt="多尺度网格" width="70%"/>
+</div>
+
+$K$ is a coarse cell, $D_i$ is the support of multiscale basis function. 
+Let's give some notation to illustrate this method better.
 
 | Notation |           Meaning            |
 | :----:   | :----------------------------- |
@@ -100,14 +106,29 @@ online basis function $\psi^{on}$ if needed.
 ### 3.1 Partition Unity
 
   We can take the original MsFEM as partition unity, the computation of 
-MsFEM basis already examplified in this folder. Using $\chi$ as the partition unity notation, 
+MsFEM basis already examplified in this folder. 
+Using $\chi$ as the partition unity notation, 
 to different with the multiscale basis.
+
+$$
+\begin{cases}
+\begin{aligned}
+-\mathrm{div}(\kappa\nabla\chi_i) &= 
+0, & \text{in} D_i, \\
+\chi_i &= \mu_i, &\text{on} {\partial}K 
+\text{with} K\subset{D_i},
+\\
+\chi_i &= 0, &\text{on} {\partial}D_i.
+\end{aligned}
+\end{cases}
+$$
+
+where $\mu_i$ is the artificial boundary that defined by ourself.
 
 ### 3.2 Offline computation
 
 Before we get started, we have to point out that offline computation is 
-focus on the $D_i$, where the subscript $i$ means the $ith$ coarse node,
-i.e. $ith$ multiscale basis support. So we discuss in a support.
+focus on the $D_i$, i.e. $i$-th multiscale basis support. 
 
 #### 3.2.1 Snapshot Space
 
@@ -147,7 +168,7 @@ $$
 \end{cases}
 $$
 
-  where $\psi_j^{(i)}$ means the $jth$ snapshot basis in the $ith$ support.
+  where $\psi_j^{(i)}$ means the $j$-th snapshot basis in the $i$-th support.
 By solving the above system, we can get the $\psi_j^{(i)}$ basis value in each fine node.
 You can set the number of snapshot basis, called $l_0=\dim(V^{snap}).$
 And uniformly, use $P^{snap}$ denote the snapshot basis value in the every fine node.
