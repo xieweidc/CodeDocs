@@ -128,7 +128,7 @@ where $\mu_i$ is the artificial boundary that defined by ourself.
 ### 3.2 Offline computation
 
 Before we get started, we have to point out that offline computation is 
-focus on the $D_i$, i.e. $i$-th multiscale basis support. 
+focus on the $D_i$, the multiscale basis support. 
 
 #### 3.2.1 Snapshot Space
 
