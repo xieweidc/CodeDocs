@@ -70,6 +70,8 @@ $V_{aux}=\oplus_{i=1}^N V_{aux}^{(i)}$.
 
 ### Multiscale space
 
+#### Constraint Version
+
 Next define the multiscale basis function $\phi_{j,ms}^{(i)}$ by：
 
 $$
@@ -113,7 +115,7 @@ A_h^i & M_h^i P^i \\
 \end{bmatrix}
 $$
 
-where $I$ is a unit matrix, which dimension is (DNN, DNN). 
+where $I$ is a unit matrix, which dimension is (DNA, DNA). 
 In this case, we have to point out that the order of 
 $\psi_{j,h}^i$ is consistent with 
 the order of $\phi_{j,ms}^i$.
@@ -130,6 +132,32 @@ P^i &: \text{(DNN, DNA)} \\
 \lambda_h^i &: \text{(DNA, DNA)}
 \end{aligned}
 $$
+
+#### Relaxed Version
+
+$$
+\phi_{j,ms} = \mathrm{argmin}
+\{ a(\phi,\phi)+s(\pi \phi-\psi_j^{(i)},\pi(v))|
+\phi \in V_0(K_{i,m})\}.
+$$
+
+which is equivalent to 
+
+$$
+a(\phi, v) + s(\pi(\phi), \pi(v)) = s(\psi,\pi(v)), 
+\quad \forall v \in V_0(K_{i,m})
+$$
+
+The matrix formulation is
+
+$$
+\left(
+A_h^i + M_h^i(P^iP^{i,T})M_h^{i,T}
+\right)
+\phi_{j,h}^i = 
+P_j^i M_h^{i,T}
+$$
+
 
 # Appendix
 
@@ -227,3 +255,26 @@ $$
 
 where $\lambda \in V_{aux}$, while $v \in \tilde{V}$, so 
 we can conclude that (1.1).
+
+## Matrix form derivation
+
+The multiscale basis $\phi$ can be a linear combination of $\varphi$, 
+i.e. $\phi = \xi_j \varphi_j$.
+
+$$
+\begin{aligned}
+s(\pi(\phi), \pi(\varphi_i))
+&= s(\pi(\xi_j\varphi_j), \pi(\varphi_i)) \\
+&= \xi_j s(\pi(\varphi_j), \pi(\varphi_i))) \\
+&= \xi_j s(s(\psi_l, \varphi_j)\psi_l, s(\psi_m, \varphi_i)\psi_m) \\
+&= s(\varphi_i,\psi_m) s(\psi_m,\psi_l) s(\psi_l,\varphi_j) \xi_j
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+s(\psi, \pi(\varphi_i)) 
+&= s(\psi, s(\psi_m, \varphi_i)\psi_m) \\
+&= s(\varphi_i, \psi_m) s(\psi_m, \psi)
+\end{aligned}
+$$
