@@ -229,6 +229,8 @@ $$
 
 ## Orthogonal of two Spaces
 
+### Constraint Version
+
 In the following, we will discuss why did the two space 
 $V_{glo}$ and $\tilde{V}$ are orthogonal.
 The operator $\pi_i$ is given by
@@ -255,6 +257,19 @@ $$
 
 where $\lambda \in V_{aux}$, while $v \in \tilde{V}$, so 
 we can conclude that (1.1).
+
+### Relaxed Version
+
+$$
+a(\phi_j^{(i)}, v) + s(\pi(\phi_j^{(i)}), \pi(v)) = 
+s(\psi_j^{(i)}, \pi(v)), \quad \forall v \in V_0(K_{i,m})
+$$
+
+Obiviously, we can get for $v \in \tilde{V}$, 
+
+$$
+a(\phi_j^{(i)}, v)=0, \quad \forall v\in \tilde{V}.
+$$
 
 ## Matrix form derivation
 
